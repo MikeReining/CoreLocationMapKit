@@ -57,8 +57,40 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         locationManager.stopUpdatingLocation()
 
         
+        // Reverse GEOCode
+        reverseGEOCodeFromCurrentLocation(manager)
+
     }
 
+    func reverseGEOCodeFromCurrentLocation(manager: CLLocationManager) {
+        CLGeocoder().reverseGeocodeLocation(manager.location, completionHandler: {(placemarks, error)->Void in
+            
+            if (error != nil) {
+                println(error.localizedDescription)
+                return
+            }
+            
+            if placemarks.count > 0 {
+                let pm = placemarks[0] as CLPlacemark
+                self.displayLocationInfo(pm)
+            } else {
+                println("Problem with the data received from geocoder")
+            }
+        })
+    }
+    
+    
+    
+    func displayLocationInfo(placemark: CLPlacemark) {
+        if placemark.postalCode != nil {
+            //stop updating location to save battery life
+            locationManager.stopUpdatingLocation()
+            println(placemark.locality)
+            println(placemark.postalCode)
+            println(placemark.administrativeArea)
+            println(placemark.country)
+        }
+    }
 }
 
 
