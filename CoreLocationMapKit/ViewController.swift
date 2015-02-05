@@ -13,19 +13,14 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     let locationManager = CLLocationManager()
     var userLocation: CLLocationCoordinate2D?
     @IBOutlet weak var mapView: MKMapView!
-
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Obtaining Location Information Permission
         locationManager.requestWhenInUseAuthorization()
         locationManager.delegate = self
-        
         locationManager.desiredAccuracy = kCLLocationAccuracyBest
         locationManager.startUpdatingLocation()
-        
-        
         mapView.showsUserLocation = true
         
     }
@@ -43,57 +38,27 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
     
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
+        //1 grab current location
         var currentLocation = locations.last as CLLocation
-        println(currentLocation.coordinate.latitude)
-        println(currentLocation.coordinate.longitude)
+        //2 create location point for map based on current location
         var location = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
-        
-        let span = MKCoordinateSpanMake(0.05, 0.05)
+        //3 define layout for map
+        let span = MKCoordinateSpanMake(0.02, 0.02)
         let userPoint = MKCoordinateRegion(center: location, span: span)
         mapView.setRegion(userPoint, animated: true)
         
-        //3
+        //4 add annotation to current location
         let annotation = MKPointAnnotation()
         annotation.setCoordinate(location)
-        annotation.title = "I am here"
-        annotation.subtitle = "Where am I?"
+        annotation.title = "Where am I?"
+        annotation.subtitle = "I am here!"
         mapView.addAnnotation(annotation)
-        
-        let region = MKCoordinateRegionMakeWithDistance(location, 2000, 2000)
-        
-        mapView.setRegion(region, animated: true)
+        //5 stop updatinglocation
         locationManager.stopUpdatingLocation()
 
         
-//        // Reverse GEOCode - not sure yet if it is working
-//        CLGeocoder().reverseGeocodeLocation(manager.location, completionHandler: {(placemarks, error)->Void in
-//            
-//            if (error != nil) {
-//                println(error.localizedDescription)
-//                return
-//            }
-//            
-//            if placemarks.count > 0 {
-//                let pm = placemarks[0] as CLPlacemark
-//                self.displayLocationInfo(pm)
-//            } else {
-//                println("Problem with the data received from geocoder")
-//            }
-//        })
     }
 
-    
-    
-    func displayLocationInfo(placemark: CLPlacemark) {
-        if placemark.postalCode != nil {
-            //stop updating location to save battery life
-            locationManager.stopUpdatingLocation()
-            println(placemark.locality)
-            println(placemark.postalCode)
-            println(placemark.administrativeArea)
-            println(placemark.country)
-        }
-    }
 }
 
 
