@@ -62,6 +62,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 
     }
 
+    // Reverse GeoCode Function to extract address from current Location
     func reverseGEOCodeFromCurrentLocation(manager: CLLocationManager) {
         CLGeocoder().reverseGeocodeLocation(manager.location, completionHandler: {(placemarks, error)->Void in
             
@@ -79,7 +80,7 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         })
     }
     
-    
+    // Print location details for GEO Lookup
     
     func displayLocationInfo(placemark: CLPlacemark) {
         if placemark.postalCode != nil {
