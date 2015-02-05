@@ -11,17 +11,10 @@ import MapKit
 
 class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDelegate {
     let locationManager = CLLocationManager()
-    
+    var userLocation: CLLocationCoordinate2D?
     @IBOutlet weak var mapView: MKMapView!
 
-    @IBAction func zoomIn(sender: AnyObject) {
-        let userLocation = mapView.userLocation
-        
-        let region = MKCoordinateRegionMakeWithDistance(
-            userLocation.location.coordinate, 2000, 2000)
-        
-        mapView.setRegion(region, animated: true)
-    }
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,13 +37,33 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 
     //MARK: Location Manager Delegate
     
-
+    func mapView(mapView: MKMapView!, didUpdateUserLocation userLocation: MKUserLocation!) {
+        println("New location")
+    }
     
     
     func locationManager(manager: CLLocationManager!, didUpdateLocations locations: [AnyObject]!) {
         var currentLocation = locations.last as CLLocation
         println(currentLocation.coordinate.latitude)
         println(currentLocation.coordinate.longitude)
+        var location = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
+        
+        let span = MKCoordinateSpanMake(0.05, 0.05)
+        let userPoint = MKCoordinateRegion(center: location, span: span)
+        mapView.setRegion(userPoint, animated: true)
+        
+        //3
+        let annotation = MKPointAnnotation()
+        annotation.setCoordinate(location)
+        annotation.title = "I am here"
+        annotation.subtitle = "Where am I?"
+        mapView.addAnnotation(annotation)
+        
+        let region = MKCoordinateRegionMakeWithDistance(location, 2000, 2000)
+        
+        mapView.setRegion(region, animated: true)
+        locationManager.stopUpdatingLocation()
+
         
 //        // Reverse GEOCode - not sure yet if it is working
 //        CLGeocoder().reverseGeocodeLocation(manager.location, completionHandler: {(placemarks, error)->Void in
@@ -68,6 +81,8 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
 //            }
 //        })
     }
+
+    
     
     func displayLocationInfo(placemark: CLPlacemark) {
         if placemark.postalCode != nil {
